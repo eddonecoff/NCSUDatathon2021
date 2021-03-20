@@ -1,0 +1,19 @@
+---
+title: "NCSUDatathon2021"
+author: "Ethan Donecoff"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(broom)
+library(readr)
+```
+
+
+```{r import-data}
+Raleigh_Police_Incidents_NIBRS_ <- read_csv("data/Raleigh_Police_Incidents_(NIBRS).csv")
+```
+
