@@ -21,6 +21,34 @@ incidents <- read_csv("data/Raleigh_Police_Incidents_(NIBRS).csv")
 count <- incidents %>%
   count(crime_description) %>%
   arrange(desc(n))
+
+misc <- incidents %>%
+  filter(latitude == 0) %>%
+  mutate(crime_description = case_when
+         (grepl("Misc", crime_description) ~ "Misc",
+          (grepl("Sex Offense", crime_description) ~ "Sex Offenses"),
+          (grepl("All Other", crime_description) ~ "All Other"),
+          TRUE ~ "etc"))%>%
+  count(crime_description)
+misc$crime_description <- factor(misc$crime_description, levels = c("Misc", "Sex Offenses", "All Other", "etc"))
+
+ggplot(data = misc, mapping = aes(x = "", y = n, fill = crime_description)) + 
+  geom_bar(stat = "identity", width = 1) + 
+  coord_polar("y", start = 0) + 
+  theme_void() + 
+  labs(color = "legend",
+       fill = "Crime Description",
+       title = "Breakdown of Incidents without Location Data")
+
+incidents$reported_dayofwk <- factor(incidents$reported_dayofwk, levels = c("Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"))
+ggplot(data = incidents, mapping = aes(x = reported_dayofwk, color = reported_dayofwk)) + 
+  geom_histogram(stat = "count", fill = "lightblue") + 
+  labs(x = "Day of Week", 
+       y = "Number of Incidents", 
+       title = "Crime Incidents by Day of Week") + 
+  theme(legend.position = "none")
+
+
 ```
 
 ```{r mapping}
@@ -28,13 +56,12 @@ nc <- map_data("state") %>%
   filter(region == "north carolina")
 
 counties <- map_data("county")
-nc_county <- subset(counties, region == "north carolina") %>%
-  filter(subregion == "wake")
+nc_county <- subset(counties, region == "north carolina")
 
 ggplot() +
   geom_polygon( data = nc_county, aes(x=long, y=lat, group=group),
-                color="black", fill = "pink" ) +
-  scale_y_continuous(limits = c(35.5, 36.1)) + 
-  geom_point(data = incidents, mapping = aes(x = X, y = Y))
+                color="black", fill = "pink" ) + 
+  coord_fixed(xlim = c(-79, -78.25), ylim = c(35.5, 36.1)) + 
+  geom_point(data = incidents, mapping = aes(x = X, y = Y, color = district))
 ```
 
