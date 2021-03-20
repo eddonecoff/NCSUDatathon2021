@@ -25,15 +25,17 @@ count <- incidents %>%
 misc <- incidents %>%
   filter(latitude == 0) %>%
   mutate(crime_description = case_when
-         (grepl("Misc", crime_description) ~ "Misc",
+         (grepl("Non-Offenses", crime_description) ~ "Non-Offenses",
           (grepl("Sex Offense", crime_description) ~ "Sex Offenses"),
-          (grepl("All Other", crime_description) ~ "All Other"),
-          TRUE ~ "etc"))%>%
+          (grepl("Missing Person|Runaway", crime_description) ~ "Missing/Runaway"),
+          (grepl("Property", crime_description) ~ "Property"),
+          (grepl("Misc", crime_description) ~ "Other Miscellaneous"),
+          TRUE ~ "Rest"))%>%
   count(crime_description)
-misc$crime_description <- factor(misc$crime_description, levels = c("Misc", "Sex Offenses", "All Other", "etc"))
+misc$crime_description <- factor(misc$crime_description, levels = c("Non-Offenses", "Sex Offenses", "Missing/Runaway", "Property","Other Miscellaneous", "Rest"))
 
 ggplot(data = misc, mapping = aes(x = "", y = n, fill = crime_description)) + 
-  geom_bar(stat = "identity", width = 1) + 
+  geom_bar(stat = "identity", width = 1, color = "white") + 
   coord_polar("y", start = 0) + 
   theme_void() + 
   labs(color = "legend",
@@ -46,6 +48,7 @@ ggplot(data = incidents, mapping = aes(x = reported_dayofwk, color = reported_da
   labs(x = "Day of Week", 
        y = "Number of Incidents", 
        title = "Crime Incidents by Day of Week") + 
+  theme_light() + 
   theme(legend.position = "none")
 
 
