@@ -8,12 +8,33 @@ output: html_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
-library(broom)
 library(readr)
+library(maps)
 ```
 
 
-```{r import-data}
-Raleigh_Police_Incidents_NIBRS_ <- read_csv("data/Raleigh_Police_Incidents_(NIBRS).csv")
+```{r import-data, echo = FALSE, include = FALSE}
+incidents <- read_csv("data/Raleigh_Police_Incidents_(NIBRS).csv")
+```
+
+```{r EDA}
+count <- incidents %>%
+  count(crime_description) %>%
+  arrange(desc(n))
+```
+
+```{r mapping}
+nc <- map_data("state") %>%
+  filter(region == "north carolina")
+
+counties <- map_data("county")
+nc_county <- subset(counties, region == "north carolina") %>%
+  filter(subregion == "wake")
+
+ggplot() +
+  geom_polygon( data = nc_county, aes(x=long, y=lat, group=group),
+                color="black", fill = "pink" ) +
+  scale_y_continuous(limits = c(35.5, 36.1)) + 
+  geom_point(data = incidents, mapping = aes(x = X, y = Y))
 ```
 
