@@ -82,7 +82,7 @@ incidents <- incidents %>%
 incidents$month_name <- factor(incidents$month_name, levels = c("January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"))
          
 ggplot(data = incidents, mapping = aes(x = month_name)) +
-  geom_histogram(stat = "count", fill = "lightblue") +
+  geom_histogram(stat = "count", fill = "red") +
   labs(x = "Month",
        y = "Number of Incidents",
        title = "Incidents by Month") +
@@ -93,7 +93,7 @@ ggplot(data = incidents, mapping = aes(x = month_name)) +
 
 ```{r hour}
 ggplot(data = incidents, mapping = aes(x = reported_hour)) +
-  geom_histogram(stat = "count", fill = "lightblue") +
+  geom_histogram(stat = "count", fill = "orange") +
   labs(x = "Hour",
        y = "Number of Incidents",
        title = "Incidents by Hour") +
@@ -140,6 +140,7 @@ ggplot() +
   geom_point(data = sex, mapping = aes(x = X, y = Y, color = district)) + 
   labs(color = "District",
        title = "Map of Incidents",
+       subtitle = "Crime Description: Sexual Offenses",
        x = "Latitude", 
        y = "Longitude")
 ```
