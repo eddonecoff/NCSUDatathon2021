@@ -10,6 +10,7 @@ knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(readr)
 library(maps)
+library(lubridate)
 ```
 
 
@@ -21,7 +22,10 @@ incidents <- read_csv("data/Raleigh_Police_Incidents_(NIBRS).csv")
 count <- incidents %>%
   count(crime_description) %>%
   arrange(desc(n))
+```
 
+```{r pie-chart}
+# Pie chart of incidents without location
 misc <- incidents %>%
   filter(latitude == 0) %>%
   mutate(crime_description = case_when
@@ -42,6 +46,12 @@ ggplot(data = misc, mapping = aes(x = "", y = n, fill = crime_description)) +
        fill = "Crime Description",
        title = "Breakdown of Incidents without Location Data")
 
+
+```
+
+
+```{r days-week}
+# Day of week histogram
 incidents$reported_dayofwk <- factor(incidents$reported_dayofwk, levels = c("Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"))
 ggplot(data = incidents, mapping = aes(x = reported_dayofwk, color = reported_dayofwk)) + 
   geom_histogram(stat = "count", fill = "lightblue") + 
@@ -50,9 +60,49 @@ ggplot(data = incidents, mapping = aes(x = reported_dayofwk, color = reported_da
        title = "Crime Incidents by Day of Week") + 
   theme_light() + 
   theme(legend.position = "none")
-
-
 ```
+
+
+```{r month}
+#Month histogram
+incidents <- incidents %>%
+  mutate(month_name = case_when(reported_month == "1" ~ "January",
+                                reported_month == "2" ~ "February",
+                                reported_month == "3" ~ "March",
+                                reported_month == "4" ~ "April",
+                                reported_month == "5" ~ "May",
+                                reported_month == "6" ~ "June",
+                                reported_month == "7" ~ "July",
+                                reported_month == "8" ~ "August",
+                                reported_month == "9" ~ "September",
+                                reported_month == "10" ~ "October",
+                                reported_month == "11" ~ "November",
+                                reported_month == "12" ~ "December"))
+
+incidents$month_name <- factor(incidents$month_name, levels = c("January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"))
+         
+ggplot(data = incidents, mapping = aes(x = month_name)) +
+  geom_histogram(stat = "count", fill = "lightblue") +
+  labs(x = "Month",
+       y = "Number of Incidents",
+       title = "Crime Incidents by Month") +
+  theme_light() +
+  theme(legend.position = "none") + 
+  theme(axis.text.x=element_text(angle=45, hjust=1))
+```
+
+```{r hour}
+ggplot(data = incidents, mapping = aes(x = reported_hour)) +
+  geom_histogram(stat = "count", fill = "lightblue") +
+  labs(x = "Hour",
+       y = "Number of Incidents",
+       title = "Crime Incidents by Hour") +
+  theme_light() +
+  theme(legend.position = "none")
+
+ts(data = incidents, )
+```
+
 
 ```{r mapping}
 nc <- map_data("state") %>%
