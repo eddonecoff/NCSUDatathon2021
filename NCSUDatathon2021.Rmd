@@ -57,7 +57,7 @@ ggplot(data = incidents, mapping = aes(x = reported_dayofwk, color = reported_da
   geom_histogram(stat = "count", fill = "lightblue") + 
   labs(x = "Day of Week", 
        y = "Number of Incidents", 
-       title = "Crime Incidents by Day of Week") + 
+       title = "Incidents by Day of Week") + 
   theme_light() + 
   theme(legend.position = "none")
 ```
@@ -85,7 +85,7 @@ ggplot(data = incidents, mapping = aes(x = month_name)) +
   geom_histogram(stat = "count", fill = "lightblue") +
   labs(x = "Month",
        y = "Number of Incidents",
-       title = "Crime Incidents by Month") +
+       title = "Incidents by Month") +
   theme_light() +
   theme(legend.position = "none") + 
   theme(axis.text.x=element_text(angle=45, hjust=1))
@@ -96,11 +96,9 @@ ggplot(data = incidents, mapping = aes(x = reported_hour)) +
   geom_histogram(stat = "count", fill = "lightblue") +
   labs(x = "Hour",
        y = "Number of Incidents",
-       title = "Crime Incidents by Hour") +
+       title = "Incidents by Hour") +
   theme_light() +
   theme(legend.position = "none")
-
-ts(data = incidents, )
 ```
 
 
@@ -114,7 +112,35 @@ nc_county <- subset(counties, region == "north carolina")
 ggplot() +
   geom_polygon( data = nc_county, aes(x=long, y=lat, group=group),
                 color="black", fill = "pink" ) + 
-  coord_fixed(xlim = c(-79, -78.25), ylim = c(35.5, 36.1)) + 
-  geom_point(data = incidents, mapping = aes(x = X, y = Y, color = district))
+  coord_fixed(xlim = c(-78.85, -78.5), ylim = c(35.7, 36.0)) + 
+  geom_point(data = incidents, mapping = aes(x = X, y = Y, color = district)) + 
+  labs(color = "District",
+       title = "Map of Incidents",
+       x = "Latitude", 
+       y = "Longitude")
+```
+
+```{r drugs}
+cats <- incidents %>%
+  mutate(category = case_when(grepl("Drug", crime_description) ~ "Drugs",
+                              grepl("Sex", crime_description) ~ "Sex"))
+
+drugs <- cats %>%
+  filter(category == "Drugs")
+
+sex <- cats %>%
+  filter(category == "Sex")
+```
+
+```{r cat-map}
+ggplot() +
+  geom_polygon( data = nc_county, aes(x=long, y=lat, group=group),
+                color="black", fill = "pink" ) + 
+  coord_fixed(xlim = c(-78.85, -78.5), ylim = c(35.7, 36.0)) + 
+  geom_point(data = sex, mapping = aes(x = X, y = Y, color = district)) + 
+  labs(color = "District",
+       title = "Map of Incidents",
+       x = "Latitude", 
+       y = "Longitude")
 ```
 
